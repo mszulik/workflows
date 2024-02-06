@@ -4,6 +4,7 @@ on:
   workflow_call:
     inputs:
       docker-repository:
+        description: The Docker repository consisting of organization/user name and project name.
         required: true
         type: string
     secrets: inherit

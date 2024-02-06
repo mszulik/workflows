@@ -6,7 +6,7 @@ on:
       pullpreview-admins:
         description: A comma separated list of users which will have SSH access to the Lightsail instance.
         required: false
-        default: @collaborators/push
+        default: "@collaborators/push"
         type: string
       env-file:
         description: The content of a file which should be written into the .env file.

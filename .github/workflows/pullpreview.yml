@@ -8,15 +8,24 @@ on:
         required: false
         default: "@collaborators/push"
         type: string
-      env-file:
-        description: The content of a file which should be written into the .env file.
-        required: false
-        type: string
       instance-type:
         description: The Lightsail instance type used for the staging environment.
         required: false
         default: nano
         type: string
+    secrets:
+      env-vars:
+        description: Variables which should be written into the .env file.
+        required: false
+      basic-auth:
+        description: The Basic Authentication credentials in a htpasswd format.
+        required: false
+      aws-access-key-id:
+        description: An AWS Access Key ID with permissions to manage Lightsail instances.
+        required: true
+      aws-secret-access-key:
+        description: An AWS Secret Access Key with permissions to manage Lightsail instances.
+        required: true
 
 jobs:
   deploy:
@@ -30,13 +39,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Generate .env file
+      - name: Generate .env and .htpasswd file
         env:
-          ENV_FILE: ${{ inputs.env-file }}
-          BASIC_AUTH: ${{ secrets.BASIC_AUTH }}
+          ENV_VARS: ${{ secrets.env-vars }}
+          BASIC_AUTH: ${{ secrets.basic-auth }}
         run: |
           cp .env.example .env
-          echo "$ENV_FILE" >> .env
+          for keyValuePair in $env_vars; do
+            echo "$keyValuePair" >> .env
+          done
           echo "$BASIC_AUTH" > .htpasswd
 
       - uses: pullpreview/action@v5
@@ -49,10 +60,10 @@ jobs:
           # The preview URL will target this port
           default_port: 80
           # Use a 512MB RAM instance type instead of the default 2GB
-          instance_type: nano_2_0
+          instance_type: ${{ inputs.instance-type }}
           # Ports to open on the server
           ports: 80, 443
         env:
-          AWS_ACCESS_KEY_ID: "${{ secrets.AWS_ACCESS_KEY_ID }}"
-          AWS_SECRET_ACCESS_KEY: "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+          AWS_ACCESS_KEY_ID: "${{ secrets.aws-access-key-id }}"
+          AWS_SECRET_ACCESS_KEY: "${{ secrets.aws-secret-access-key }}"
           AWS_REGION: "eu-central-1"

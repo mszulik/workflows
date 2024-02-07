@@ -21,7 +21,7 @@ If a reusable workflow expects `Inputs` and `Secrets`, they can be passed like t
 
 ```yml
 ...
-    uses: the/path/to/your/workflow/file.yml@main
+    uses: username/repository/.github/workflows/workflow.yml@main
     with:
       an-input: 1234
     secrets:

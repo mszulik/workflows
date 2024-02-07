@@ -11,6 +11,7 @@ on:
 jobs:
   build-push-docker-image:
     runs-on: ubuntu-latest
+
     steps:
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -62,6 +63,7 @@ jobs:
 
   sync-readme-to-docker-hub:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout GitHub repository
         uses: actions/checkout@v4

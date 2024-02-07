@@ -36,8 +36,10 @@ jobs:
       deployments: write # to delete deployments
       pull-requests: write # to remove labels
       statuses: write # to create commit status
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout GitHub repository
+        uses: actions/checkout@v4
 
       - name: Generate .env and .htpasswd file
         env:
@@ -47,13 +49,11 @@ jobs:
           cp .env.example .env
           for keyValuePair in $ENV_VARS; do
             echo "$keyValuePair" >> .env
-            echo 123
-            echo $keyValuePair
-            echo "$keyValuePair"
           done
           echo "$BASIC_AUTH" > .htpasswd
 
-      - uses: pullpreview/action@v5
+      - name: Boot PullPreview staging environment
+        uses: pullpreview/action@v5
         with:
           # Those GitHub users will have SSH access to the servers
           admins: ${{ inputs.pullpreview-admins }}

@@ -45,8 +45,11 @@ jobs:
           BASIC_AUTH: ${{ secrets.basic-auth }}
         run: |
           cp .env.example .env
-          for keyValuePair in $env_vars; do
+          for keyValuePair in $ENV_VARS; do
             echo "$keyValuePair" >> .env
+            echo 123
+            echo $keyValuePair
+            echo "$keyValuePair"
           done
           echo "$BASIC_AUTH" > .htpasswd
 

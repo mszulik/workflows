@@ -54,6 +54,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
 
       - name: Sync README with Docker Hub description
+        if: ${{ github.ref_name == env.LATEST_TAG }}
         uses: peter-evans/dockerhub-description@v4
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}

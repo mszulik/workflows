@@ -23,12 +23,12 @@ If a reusable workflow expects `Inputs` and `Secrets`, they can be passed like t
 ...
     uses: username/repository/.github/workflows/workflow.yml@main
     with:
-      an-input: 1234
+      AN_INPUT: 1234
     secrets:
-      a-multiline-secret: |
+      A_MULTILINE_SECRET: |
         SECRET1="${{ secrets.SECRET1 }}"
         SECRET2="${{ secrets.SECRET2 }}"
-      another-secret: ${{ secrets.SECRET3 }}
+      ANOTHER_SECRET: ${{ secrets.SECRET3 }}
 ```
 
 > [!NOTE]

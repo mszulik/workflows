@@ -3,27 +3,27 @@ name: Boot a staging environment using PullPreview
 on:
   workflow_call:
     inputs:
-      pullpreview-admins:
+      PULLPREVIEW_ADMINS:
         description: A comma separated list of users which will have SSH access to the Lightsail instance.
         required: false
         default: "@collaborators/push"
         type: string
-      instance-type:
+      INSTANCE_TYPE:
         description: The Lightsail instance type used for the staging environment.
         required: false
         default: nano
         type: string
     secrets:
-      env-vars:
+      ENV_VARS:
         description: Variables which should be written into the .env file.
         required: false
-      basic-auth:
+      BASIC_AUTH:
         description: The Basic Authentication credentials in a htpasswd format.
         required: false
-      aws-access-key-id:
+      AWS_ACCESS_KEY_ID:
         description: An AWS Access Key ID with permissions to manage Lightsail instances.
         required: true
-      aws-secret-access-key:
+      AWS_SECRET_ACCESS_KEY:
         description: An AWS Secret Access Key with permissions to manage Lightsail instances.
         required: true
 
@@ -43,8 +43,8 @@ jobs:
 
       - name: Generate .env and .htpasswd file
         env:
-          ENV_VARS: ${{ secrets.env-vars }}
-          BASIC_AUTH: ${{ secrets.basic-auth }}
+          ENV_VARS: ${{ secrets.ENV_VARS }}
+          BASIC_AUTH: ${{ secrets.BASIC_AUTH }}
         run: |
           cp .env.example .env
           for keyValuePair in $ENV_VARS; do
@@ -56,17 +56,17 @@ jobs:
         uses: pullpreview/action@v5
         with:
           # Those GitHub users will have SSH access to the servers
-          admins: ${{ inputs.pullpreview-admins }}
+          admins: ${{ inputs.PULLPREVIEW_ADMINS }}
           # Use the cidrs option to restrict access to the live environments to specific IP ranges
           cidrs: "0.0.0.0/0"
           compose_files: docker-compose.pullpreview.yml
           # The preview URL will target this port
           default_port: 80
           # Use a 512MB RAM instance type instead of the default 2GB
-          instance_type: ${{ inputs.instance-type }}
+          instance_type: ${{ inputs.INSTANCE_TYPE }}
           # Ports to open on the server
           ports: 80, 443
         env:
-          AWS_ACCESS_KEY_ID: "${{ secrets.aws-access-key-id }}"
-          AWS_SECRET_ACCESS_KEY: "${{ secrets.aws-secret-access-key }}"
+          AWS_ACCESS_KEY_ID: "${{ secrets.AWS_ACCESS_KEY_ID }}"
+          AWS_SECRET_ACCESS_KEY: "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
           AWS_REGION: "eu-central-1"

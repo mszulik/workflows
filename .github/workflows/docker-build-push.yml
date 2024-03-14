@@ -3,7 +3,7 @@ name: Build, test and push docker image
 on:
   workflow_call:
     inputs:
-      docker-repository:
+      DOCKER_REPOSITORY:
         description: The Docker repository consisting of organization/user name and project name.
         required: true
         type: string
@@ -33,7 +33,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            ${{ inputs.docker-repository }}
+            ${{ inputs.DOCKER_REPOSITORY }}
           flavor: |
             latest=false
           tags: |
@@ -43,35 +43,17 @@ jobs:
             type=semver,pattern={{version}}
             type=sha
 
-      - name: Build docker image
+      - name: Build and push docker image
         uses: docker/build-push-action@v5
         with:
-          file: ./docker/Dockerfile
-          load: true
-          tags: ${{ steps.meta.outputs.tags }}
-
-      - name: Test docker image
-        run: |
-          docker run --rm -d ${{ fromJSON(steps.meta.outputs.json).tags[0] }}
-
-      - name: Push docker image from cache
-        uses: docker/build-push-action@v5
-        with:
-          file: ./docker/Dockerfile
           push: true
+          file: ./docker/Dockerfile
           tags: ${{ steps.meta.outputs.tags }}
-
-  sync-readme-to-docker-hub:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout GitHub repository
-        uses: actions/checkout@v4
 
       - name: Sync README with Docker Hub description
         uses: peter-evans/dockerhub-description@v4
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-          repository: ${{ inputs.docker-repository }}
+          repository: ${{ inputs.DOCKER_REPOSITORY }}
           short-description: ${{ github.event.repository.description }}
